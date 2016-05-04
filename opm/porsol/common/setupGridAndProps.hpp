@@ -5,7 +5,7 @@
 // Created: Tue Aug 11 14:47:35 2009
 //
 // Author(s): Atgeirr F Rasmussen <atgeirr@sintef.no>
-//            Bård Skaflestad     <bard.skaflestad@sintef.no>
+//            BÃ¥rd Skaflestad     <bard.skaflestad@sintef.no>
 //
 // $Date$
 //
@@ -161,10 +161,9 @@ namespace Opm
                                          Dune::CpGrid& grid,
                                          ResProp<3>& res_prop)
     {
-        Opm::ParseContext parseContext;
-        std::shared_ptr<EclipseState> state = std::make_shared<EclipseState>(deck , parseContext);
+        auto eg = std::make_shared<const EclipseGrid>(deck, nullptr);
         const std::string* rl_ptr = (rock_list == "no_list") ? 0 : &rock_list;
-        grid.processEclipseFormat(state->getInputGrid(), periodic_extension, turn_normals, clip_z);
+        grid.processEclipseFormat(eg, periodic_extension, turn_normals, clip_z);
         res_prop.init(deck, grid.globalCell(), perm_threshold, rl_ptr, use_jfunction_scaling, sigma, theta);
         if (unique_bids) {
             grid.setUniqueBoundaryIds(true);
