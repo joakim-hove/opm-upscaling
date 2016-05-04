@@ -37,6 +37,7 @@
 #include <opm/porsol/blackoil/BlackoilInitialization.hpp>
 #include <opm/porsol/common/SimulatorUtilities.hpp>
 #include <opm/parser/eclipse/Parser/Parser.hpp>
+#include <opm/parser/eclipse/EclipseState/EclipseState.hpp>
 #include <opm/parser/eclipse/Parser/ParseContext.hpp>
 #include <opm/parser/eclipse/Deck/Deck.hpp>
 #include <iostream>
@@ -125,10 +126,12 @@ init(const Opm::parameter::ParameterGroup& param)
         Opm::ParseContext parseContext;
         Opm::ParserPtr parser(new Opm::Parser());
         Opm::DeckConstPtr deck = parser->parseFile(param.get<std::string>("filename") , parseContext);
+        std::shared_ptr<Opm::EclipseState> state = std::make_shared<Opm::EclipseState>( deck , parseContext );
+
         double z_tolerance = param.getDefault<double>("z_tolerance", 0.0);
         bool periodic_extension = param.getDefault<bool>("periodic_extension", false);
         bool turn_normals = param.getDefault<bool>("turn_normals", false);
-        grid_.processEclipseFormat(deck, z_tolerance, periodic_extension, turn_normals);
+        grid_.processEclipseFormat(state->getInputGrid(), z_tolerance, periodic_extension, turn_normals);
         double perm_threshold_md = param.getDefault("perm_threshold_md", 0.0);
         double perm_threshold = Opm::unit::convert::from(perm_threshold_md, Opm::prefix::milli*Opm::unit::darcy);
         rock_.init(deck, grid_.globalCell(), perm_threshold);
